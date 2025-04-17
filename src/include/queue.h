@@ -38,13 +38,18 @@ typedef struct {
     unsigned tail;
     pthread_spinlock_t write_lock;
     int is_init;
+} LogChannel;
+
+typedef struct {
+    LogChannel io_channel;
+    LogChannel mem_channel;
 } LogQueue;
 
 void init_log(LogQueue **queue);
 int log_put(LogQueue *queue, LogElement element);
-int log_get(LogQueue *queue, LogElement *element);
-int log_is_empty(LogQueue *queue);
+int log_get(LogQueue *queue, LogElement *element, enum LogType type);
 void log_reg(LogQueue **queue, char *message, enum LogType type);
-static void get_program_name(char *buffer, ssize_t size);
+static void get_program_name(char *buffer, int size);
+LogChannel *get_channel_by_type(LogQueue *queue, enum LogType type);
 
 #endif

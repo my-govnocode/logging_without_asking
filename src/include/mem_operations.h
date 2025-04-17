@@ -2,6 +2,7 @@
 #define MEM_OPERATIONS_H
 
 #define _GNU_SOURCE
+#define IS_LOGGER
 
 #include <stdio.h>
 #include <dlfcn.h>
@@ -15,8 +16,6 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include "queue.h"
-
-#define IS_LOGGER
 
 extern LogQueue *log_queue;
 extern int disable_log;

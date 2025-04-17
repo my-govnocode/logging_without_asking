@@ -1,3 +1,7 @@
+/**
+ * Overriding standard memory management operations from libc
+ */
+
 #include "include/mem_operations.h"
 
 void *malloc(size_t size)

@@ -1,16 +1,9 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <signal.h>
-#include <string.h>
-#include <pthread.h>
-#include "include/queue.h"
-#include "include/listener.h"
 
-#define IO_LOGS_DEFAULT "logs/io.log"
-#define MEM_LOGS_DEFAULT "logs/mem.log"
+/**
+ * Functionality for launching the necessary daemons
+ */
+
+#include "include/logd.h"
 
 int running = 1;
 
@@ -37,7 +30,6 @@ int main(int argc, char *argv[])
 
     strncpy(mem_conf.log_file, argv[3], sizeof(mem_conf.log_file) - 1);
     mem_conf.log_file[sizeof(mem_conf.log_file) - 1] = '\0';
-    printf("%s %s\n", io_conf.log_file, mem_conf.log_file);
 
     if (daemonize(IO_PID_FILE) == 0) {
         signal(SIGINT, sig_handler);
@@ -64,14 +56,14 @@ int main(int argc, char *argv[])
         signal(SIGINT, sig_handler);
         signal(SIGTERM, sig_handler);
 
-        pthread_t io_listener_pthread_id = 0;
+        pthread_t mem_listener_pthread_id = 0;
 
-        if (pthread_create(&io_listener_pthread_id, NULL, listen, &mem_conf) != 0) {
+        if (pthread_create(&mem_listener_pthread_id, NULL, listen, &mem_conf) != 0) {
             perror("Ошибка при создании потока");
             return EXIT_FAILURE;
         }
 
-        pthread_join(io_listener_pthread_id, NULL);
+        pthread_join(mem_listener_pthread_id, NULL);
 
         if (remove(MEM_PID_FILE) != 0) {
             perror("Ошибка при удалении файла для хранения pid\n");

@@ -1,3 +1,7 @@
+/**
+ * Overriding standard I/O operations from libc
+ */
+
 #include "include/io_operations.h"
 
 int open(const char *pathname, int flags, ...)
@@ -118,7 +122,7 @@ off_t lseek(int fd, off_t offset, int whence)
 
     sprintf(
         message,
-        "(write) file_descriptor: %d; requested_offset: %ld; whence: %d; resulted_offset: %ld",
+        "(lseek) file_descriptor: %d; requested_offset: %ld; whence: %d; resulted_offset: %ld",
         fd,
         offset,
         whence,

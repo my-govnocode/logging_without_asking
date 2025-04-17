@@ -1,3 +1,7 @@
+/**
+ * Daemon logic
+ */
+
 #include "include/listener.h"
 
 pid_t daemonize(char *pid_file)
@@ -10,13 +14,15 @@ pid_t daemonize(char *pid_file)
     pid_t pid;
 
     pid = fork();
-    if (pid < 0 || pid > 0)
-    {
+    if (pid < 0 || pid > 0) {
         return pid;
     }
 
-    if (setsid() < 0)
-    {
+    if (setsid() < 0) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (chdir("/") < 0) {
         exit(EXIT_FAILURE);
     }
 
@@ -41,25 +47,21 @@ pid_t daemonize(char *pid_file)
     }
 
     int fd = open("/dev/null", O_RDWR);
-    if (fd >= 0)
-    {
+    if (fd >= 0) {
         dup2(fd, STDIN_FILENO);
         dup2(fd, STDOUT_FILENO);
         dup2(fd, STDERR_FILENO);
-        if (fd > STDERR_FILENO)
-        {
+        if (fd > STDERR_FILENO) {
             close(fd);
         }
     }
 
-    int pid_file_fd = open(pid_file, O_CREAT | O_RDWR | O_TRUNC, 0644);
-    if (pid_file_fd < 0)
-    {
+    int pid_file_fd = open(pid_file, O_CREAT | O_RDWR | O_TRUNC, 0755);
+    if (pid_file_fd < 0) {
         exit(EXIT_FAILURE);
     }
 
-    if (lockf(pid_file_fd, F_TLOCK, 0) < 0)
-    {
+    if (lockf(pid_file_fd, F_TLOCK, 0) < 0) {
         exit(EXIT_FAILURE);
     }
 
@@ -75,36 +77,39 @@ void *listen(void *arg_ptr)
 {
     ListenerConf *conf = (ListenerConf *)arg_ptr;
 
-    LogQueue *log_queue;
-    memset(log_queue, 0, sizeof(LogQueue));
+    LogQueue *log_queue = NULL;
     init_log(&log_queue);
 
-    int io_log_fd = open(conf->log_file, O_CREAT | O_APPEND | O_WRONLY, 0755);
+    int log_fd = open(conf->log_file, O_CREAT | O_APPEND | O_WRONLY, 0755);
 
-    if (io_log_fd == -1) {
+    if (log_fd == -1) {
         perror("Open log file");
         munmap(log_queue, sizeof(LogQueue));
-        close(io_log_fd);
+        close(log_fd);
         exit(EXIT_FAILURE);
     }
 
     while (running) {
         LogElement element;
-        log_get(log_queue, &element);
+        int res = log_get(log_queue, &element, conf->type);
+
+        if (res != 0) {
+            continue;
+        }
 
         if (element.timestamp != 0 && element.type == conf->type) {
             char log_messsage[2056];
 
             memset(log_messsage, '\0', sizeof(log_messsage));
             sprintf(log_messsage, "[%lu] pid: %d; program name: \"%s\" %s\n", element.timestamp, element.pid, element.prog_name, element.message);
-            int write_len = write(io_log_fd, log_messsage, strlen(log_messsage));
+            int write_len = write(log_fd, log_messsage, strlen(log_messsage));
         }
 
         sleep(conf->frequency_of_checking);
     }
 
     munmap(log_queue, sizeof(LogQueue));
-    close(io_log_fd);
+    close(log_fd);
 
     return NULL;
 }

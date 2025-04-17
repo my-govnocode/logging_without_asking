@@ -3,21 +3,30 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define FILE_PATH "test.txt"
+#define TEST_DATA "aaa"
+#define SIZE 4
+#define FILE_PATH "./tmp/test.txt"
 
 int main()
 {
-    int fd = open(FILE_PATH, O_CREAT | O_WRONLY, 0644);
+    int fd = open(FILE_PATH, O_CREAT | O_RDWR, 0644);
 
     if (fd == -1) {
         perror("Error when open file");
         return EXIT_FAILURE;
     }
 
-    char *buffer = (char *)malloc(4);
-    sprintf(buffer, "aaa");
+    lseek(fd, 3, 0);
 
-    write(fd, buffer, 4);
+    char *buffer = (char *)malloc(SIZE);
+    sprintf(buffer, TEST_DATA);
+
+    buffer = (char *)realloc(buffer, SIZE + 1);
+
+    write(fd, buffer, SIZE);
+
+    char read_data[SIZE];
+    read(fd, read_data, SIZE);
 
     close(fd);
     free(buffer);
