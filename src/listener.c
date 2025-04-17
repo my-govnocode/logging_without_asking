@@ -74,21 +74,10 @@ pid_t daemonize(char *pid_file)
 void *listen(void *arg_ptr)
 {
     ListenerConf *conf = (ListenerConf *)arg_ptr;
-    int fd = shm_open(SHARED_MEM_NAME, O_CREAT | O_RDWR, 0755);
-    if (fd == -1) {
-        perror("shm_open");
-    }
 
-    if (ftruncate(fd, sizeof(LogQueue)) == -1) {
-        perror("ftruncate");
-        close(fd);
-        exit(EXIT_FAILURE);
-    }
-
-    LogQueue *log_queue = mmap(0, sizeof(LogQueue), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (log_queue == MAP_FAILED) {
-        perror("mmap");
-    }
+    LogQueue *log_queue;
+    memset(log_queue, 0, sizeof(LogQueue));
+    init_log(&log_queue);
 
     int io_log_fd = open(conf->log_file, O_CREAT | O_APPEND | O_WRONLY, 0755);
 
@@ -115,7 +104,6 @@ void *listen(void *arg_ptr)
     }
 
     munmap(log_queue, sizeof(LogQueue));
-    close(fd);
     close(io_log_fd);
 
     return NULL;

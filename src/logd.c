@@ -28,13 +28,15 @@ int main(int argc, char *argv[])
     ListenerConf io_conf, mem_conf;
 
     io_conf.type = IO_OPERATION;
-    io_conf.frequency_of_checking = (unsigned)(argv[1] - '0');
-    strcpy(io_conf.log_file, argv[2]);
-
+    io_conf.frequency_of_checking = atoi(argv[1]);
+    strncpy(io_conf.log_file, argv[2], sizeof(io_conf.log_file) - 1);
+    io_conf.log_file[sizeof(io_conf.log_file) - 1] = '\0';
+    
     mem_conf.type = MEM_MENEGMENT;
-    mem_conf.frequency_of_checking = (unsigned)(argv[1] - '0');
-    strcpy(mem_conf.log_file, argv[3]);
+    mem_conf.frequency_of_checking = atoi(argv[1]);
 
+    strncpy(mem_conf.log_file, argv[3], sizeof(mem_conf.log_file) - 1);
+    mem_conf.log_file[sizeof(mem_conf.log_file) - 1] = '\0';
     printf("%s %s\n", io_conf.log_file, mem_conf.log_file);
 
     if (daemonize(IO_PID_FILE) == 0) {

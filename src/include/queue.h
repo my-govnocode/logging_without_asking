@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 #include <stdint.h>
@@ -36,6 +37,7 @@ typedef struct {
     unsigned head;
     unsigned tail;
     pthread_spinlock_t write_lock;
+    int is_init;
 } LogQueue;
 
 void init_log(LogQueue **queue);

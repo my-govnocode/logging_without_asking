@@ -16,7 +16,7 @@ void *malloc(size_t size)
 
     sprintf(
         message,
-        "(malloc) bytes_requested: %d; new_mem_pointer: %p",
+        "(malloc) bytes_requested: %ld; new_mem_pointer: %p",
         size,
         result
     );
@@ -42,7 +42,7 @@ void *realloc(void *ptr, size_t size)
 
     sprintf(
         message,
-        "(realloc) bytes_requested: %d; current_mem_pointer: %p; new_mem_pointer: %p",
+        "(realloc) bytes_requested: %ld; current_mem_pointer: %p; new_mem_pointer: %p",
         size,
         ptr,
         result

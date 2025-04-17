@@ -42,7 +42,7 @@ ssize_t read(int fd, void *buf, size_t count)
 
     sprintf(
         message,
-        "(read) file_descriptor: %d; buffer_pointer: %p; count: %d; bytes_read: %d",
+        "(read) file_descriptor: %d; buffer_pointer: %p; count: %ld; bytes_read: %ld",
         fd,
         buf,
         count,
@@ -68,7 +68,7 @@ ssize_t write(int fd, const void *buf, size_t count)
 
     sprintf(
         message,
-        "(write) file_descriptor: %d; buffer_pointer: %p; count: %d; bytes_written: %d",
+        "(write) file_descriptor: %d; buffer_pointer: %p; count: %ld; bytes_written: %ld",
         fd,
         buf,
         count,
@@ -118,7 +118,7 @@ off_t lseek(int fd, off_t offset, int whence)
 
     sprintf(
         message,
-        "(write) file_descriptor: %d; requested_offset: %d; whence: %d; resulted_offset: %d",
+        "(write) file_descriptor: %d; requested_offset: %ld; whence: %d; resulted_offset: %ld",
         fd,
         offset,
         whence,

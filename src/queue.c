@@ -26,8 +26,9 @@ void init_log(LogQueue **queue)
         return;
     }
 
-    if (log_is_empty(*queue)) {
+    if ((*queue)->is_init == 0) {
         pthread_spin_init(&(*queue)->write_lock, PTHREAD_PROCESS_SHARED);
+        (*queue)->is_init = 1;
     }
 
     // memset(*queue, 0, sizeof(LogQueue));
