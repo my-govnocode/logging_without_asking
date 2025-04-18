@@ -3,6 +3,13 @@
 
 [Документация](./docs/common.md)
 
+### Требования
+
+libc: 2.36-9\
+gcc: 12.2.0
+
+### Запуск
+
 1) Склонировать проект
 ```
 git clone https://github.com/under-tension/logging_without_asking.git
