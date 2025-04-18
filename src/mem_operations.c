@@ -12,7 +12,7 @@ void *malloc(size_t size)
         return malloc_orig(size);
     }
 
-    disable_log = 1;
+    disable_log();
 
     void *result = malloc_orig(size);
 
@@ -27,7 +27,7 @@ void *malloc(size_t size)
 
     log_reg(&log_queue, message, MEM_MENEGMENT);
 
-    disable_log = 0;
+    enable_log();
 
     return result;
 }

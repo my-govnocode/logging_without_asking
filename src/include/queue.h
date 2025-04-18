@@ -20,8 +20,6 @@
 #define MESSAGE_SIZE 1024
 #define PROG_NAME_SIZE 256
 
-extern int disable_log_flag;
-
 enum LogType {
     IO_OPERATION, MEM_MENEGMENT
 };

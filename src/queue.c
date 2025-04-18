@@ -110,10 +110,6 @@ int log_get(LogQueue *queue, LogElement *element, enum LogType type)
 
 void log_reg(LogQueue **queue, char *message, enum LogType type)
 {
-    if (is_disable_log()) {
-        return;
-    }
-
     disable_log();
 
     if (*queue == NULL) {
