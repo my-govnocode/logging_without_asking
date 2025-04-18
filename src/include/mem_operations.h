@@ -18,7 +18,6 @@
 #include "queue.h"
 
 extern LogQueue *log_queue;
-extern int disable_log;
 
 static void *(*malloc_orig)(size_t size);
 static void (*free_orig)(void *ptr);

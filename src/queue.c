@@ -4,11 +4,11 @@
 
 #include "include/queue.h"
 
-int disable_log = 0;
+static int disable_log_flag = 0;
 
 void init_log(LogQueue **queue)
 {
-    disable_log = 1;
+    disable_log();
 
     int fd = shm_open(SHARED_MEM_NAME, O_CREAT | O_RDWR, 0755);
     if (fd == -1) {
@@ -42,7 +42,7 @@ void init_log(LogQueue **queue)
     close(fd);
 
     exit:
-    disable_log = 0;
+    enable_log();
 }
 
 int log_put(LogQueue *queue, LogElement element)
@@ -110,7 +110,11 @@ int log_get(LogQueue *queue, LogElement *element, enum LogType type)
 
 void log_reg(LogQueue **queue, char *message, enum LogType type)
 {
-    disable_log = 1;
+    if (is_disable_log()) {
+        return;
+    }
+
+    disable_log();
 
     if (*queue == NULL) {
         init_log(queue);
@@ -137,16 +141,17 @@ void log_reg(LogQueue **queue, char *message, enum LogType type)
 
     log_put(*queue, element);
 
-    disable_log = 0;
+    enable_log();
 }
 
-static void get_program_name(char *buffer, int size)
-{
+void get_program_name(char *buffer, int size)
+{    
+    disable_log();
     int fd = open("/proc/self/comm", O_RDONLY);
     if (fd == -1) {
         perror("open /proc/self/comm");
         strcpy(buffer, "unknown");
-        return;
+        goto exit;
     }
 
     int bytes_read = read(fd, buffer, size - 1);
@@ -157,6 +162,9 @@ static void get_program_name(char *buffer, int size)
     }
 
     close(fd);
+
+    exit:
+    enable_log();
 }
 
 LogChannel *get_channel_by_type(LogQueue *queue, enum LogType type)
@@ -168,4 +176,19 @@ LogChannel *get_channel_by_type(LogQueue *queue, enum LogType type)
     }
 
     return NULL;
+}
+
+int is_disable_log()
+{
+    return disable_log_flag;
+}
+
+void disable_log()
+{
+    disable_log_flag = 1;
+}
+
+void enable_log()
+{
+    disable_log_flag = 0;
 }

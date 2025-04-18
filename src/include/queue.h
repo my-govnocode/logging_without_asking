@@ -20,6 +20,8 @@
 #define MESSAGE_SIZE 1024
 #define PROG_NAME_SIZE 256
 
+extern int disable_log_flag;
+
 enum LogType {
     IO_OPERATION, MEM_MENEGMENT
 };
@@ -49,7 +51,10 @@ void init_log(LogQueue **queue);
 int log_put(LogQueue *queue, LogElement element);
 int log_get(LogQueue *queue, LogElement *element, enum LogType type);
 void log_reg(LogQueue **queue, char *message, enum LogType type);
-static void get_program_name(char *buffer, int size);
+void get_program_name(char *buffer, int size);
 LogChannel *get_channel_by_type(LogQueue *queue, enum LogType type);
+int is_disable_log();
+void disable_log();
+void enable_log();
 
 #endif

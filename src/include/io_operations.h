@@ -18,7 +18,6 @@
 #include "queue.h"
 
 extern LogQueue *log_queue;
-extern int disable_log;
 
 static int (*open_orig)(const char *pathname, int flags, ...);
 static ssize_t (*read_orig)(int fd, void *buf, size_t count);
