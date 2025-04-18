@@ -6,7 +6,7 @@
 
 int open(const char *pathname, int flags, ...)
 {
-    open_orig = dlsym(RTLD_NEXT, "open");
+    open_orig = open_orig ? open_orig : dlsym(RTLD_NEXT, "open");
 
     mode_t mode = 0;
     if (flags & O_CREAT) {
@@ -16,7 +16,7 @@ int open(const char *pathname, int flags, ...)
         va_end(args);
     }
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return open_orig(pathname, flags, mode);
     }
 
@@ -34,9 +34,9 @@ int open(const char *pathname, int flags, ...)
 
 ssize_t read(int fd, void *buf, size_t count)
 {
-    read_orig = dlsym(RTLD_NEXT, "read");
+    read_orig = read_orig ? read_orig : dlsym(RTLD_NEXT, "read");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return read_orig(fd, buf, count);
     }
 
@@ -60,9 +60,9 @@ ssize_t read(int fd, void *buf, size_t count)
 
 ssize_t write(int fd, const void *buf, size_t count)
 {
-    write_orig = dlsym(RTLD_NEXT, "write");
+    write_orig = write_orig ? write_orig : dlsym(RTLD_NEXT, "write");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return write_orig(fd, buf, count);
     }
 
@@ -86,9 +86,9 @@ ssize_t write(int fd, const void *buf, size_t count)
 
 int close(int fd)
 {
-    close_orig = dlsym(RTLD_NEXT, "close");
+    close_orig = close_orig ? close_orig : dlsym(RTLD_NEXT, "close");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return close_orig(fd);
     }
 
@@ -110,9 +110,9 @@ int close(int fd)
 
 off_t lseek(int fd, off_t offset, int whence)
 {
-    lseek_orig = dlsym(RTLD_NEXT, "lseek");
+    lseek_orig = lseek_orig ? lseek_orig : dlsym(RTLD_NEXT, "lseek");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return lseek_orig(fd, offset, whence);
     }
 

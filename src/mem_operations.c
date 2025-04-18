@@ -6,13 +6,13 @@
 
 void *malloc(size_t size)
 {
-    malloc_orig = dlsym(RTLD_NEXT, "malloc");
+    malloc_orig = malloc_orig ? malloc_orig : dlsym(RTLD_NEXT, "malloc");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return malloc_orig(size);
     }
 
-    disable_log = 1;
+    disable_log();
 
     void *result = malloc_orig(size);
 
@@ -27,16 +27,16 @@ void *malloc(size_t size)
 
     log_reg(&log_queue, message, MEM_MENEGMENT);
 
-    disable_log = 0;
+    enable_log();
 
     return result;
 }
 
 void *realloc(void *ptr, size_t size)
 {
-    realloc_orig = dlsym(RTLD_NEXT, "realloc");
+    realloc_orig = realloc_orig ? realloc_orig : dlsym(RTLD_NEXT, "realloc");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return realloc_orig(ptr, size);
     }
 
@@ -59,9 +59,9 @@ void *realloc(void *ptr, size_t size)
 
 void free(void *ptr)
 {
-    free_orig = dlsym(RTLD_NEXT, "free");
+    free_orig = free_orig ? free_orig : dlsym(RTLD_NEXT, "free");
 
-    if (disable_log) {
+    if (is_disable_log()) {
         return free_orig(ptr);
     }
 
